@@ -50,7 +50,7 @@ describe Museum do
     @dmns.admit(@patron_2)
     @dmns.admit(@patron_3)
 
-    expect(@dmns.patrons).to eq(@patron_1, @patron_2, @patron_3)
+    expect(@dmns.patrons).to eq([@patron_1, @patron_2, @patron_3])
   end
 
   it 'displays patrons by exhibit interest' do
@@ -60,12 +60,21 @@ describe Museum do
     @dmns.admit(@patron_1)
     @dmns.admit(@patron_2)
     @dmns.admit(@patron_3)
+    @dmns.admit(@patron_4)
 
     expect(@dmns.patrons_by_exhibit_interest).to eq({@gems_and_minerals => [@patron_1], @dead_sea_scrolls => [@patron_1, @patron_3, @patron_4], @imax => [@patron_2]})
   end
 
   it 'adds contestants to a lottery if they are interested in an exhibit but lack the cash' do
-    expect(@dmns.ticket_lottery_contestants(@dead_sea_scrolls)).to eq[@patron_3, @patron_4]
+    @dmns.add_exhibit(@gems_and_minerals)
+    @dmns.add_exhibit(@dead_sea_scrolls)
+    @dmns.add_exhibit(@imax)
+    @dmns.admit(@patron_1)
+    @dmns.admit(@patron_2)
+    @dmns.admit(@patron_3)
+    @dmns.admit(@patron_4)
+
+    expect(@dmns.ticket_lottery_contestants(@dead_sea_scrolls)).to eq([@patron_3, @patron_4])
   end
 
   it 'draws a lottery winner' do
