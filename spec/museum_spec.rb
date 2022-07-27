@@ -10,14 +10,19 @@ describe Museum do
     @imax = Exhibit.new({name: "IMAX",cost: 15})
     @patron_1 = Patron.new("Bob", 20)
     @patron_2 = Patron.new("Sally", 20)
+    @patron_3 = Patron.new("Johnny", 5)
+    @patron_4 = Patron.new("Megan", 7)
     @patron_1.add_interest("Dead Sea Scrolls")
     @patron_1.add_interest("Gems and Minerals")
     @patron_2.add_interest("IMAX")
+    @patron_3.add_interest("Dead Sea Scrolls")
+    @patron_4.add_interest("Dead Sea Scrolls")
   end
 
   it 'has attributes' do
     expect(@dmns.name).to eq("Denver Museum of Nature and Science")
     expect(@dmns.exhibits).to eq([])
+    expect(@dmns.patrons).to eq([])
   end
 
   it 'can add exhibits' do
@@ -37,4 +42,38 @@ describe Museum do
     expect(@dmns.recommend_exhibits(@patron_2)).to eq([@imax])
   end
 
+  it 'admits patrons' do
+    @dmns.add_exhibit(@gems_and_minerals)
+    @dmns.add_exhibit(@dead_sea_scrolls)
+    @dmns.add_exhibit(@imax)
+    @dmns.admit(@patron_1)
+    @dmns.admit(@patron_2)
+    @dmns.admit(@patron_3)
+
+    expect(@dmns.patrons).to eq(@patron_1, @patron_2, @patron_3)
+  end
+
+  it 'displays patrons by exhibit interest' do
+    @dmns.add_exhibit(@gems_and_minerals)
+    @dmns.add_exhibit(@dead_sea_scrolls)
+    @dmns.add_exhibit(@imax)
+    @dmns.admit(@patron_1)
+    @dmns.admit(@patron_2)
+    @dmns.admit(@patron_3)
+
+    expect(@dmns.patrons_by_exhibit_interest).to eq({@gems_and_minerals => [@patron_1], @dead_sea_scrolls => [@patron_1, @patron_3, @patron_4], @imax => [@patron_2]})
+  end
+
+  it 'adds contestants to a lottery if they are interested in an exhibit but lack the cash' do
+    expect(@dmns.ticket_lottery_contestants(@dead_sea_scrolls)).to eq[@patron_3, @patron_4]
+  end
+
+  it 'draws a lottery winner' do
+    allow(@dmns).to receive(:random_contestant).and_return(@patron_3)
+    expect(@dmns.draw_lottery_winner(@dead_sea_scrolls)).to eq("Johnny")
+  end
+
+  it 'lottery winner is nil if there are no contestants' do
+    expect(@dmns.draw_lottery_winner(@gems_and_minerals)).to be nil
+  end
 end
