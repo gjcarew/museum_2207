@@ -78,11 +78,25 @@ describe Museum do
   end
 
   it 'draws a lottery winner' do
-    allow(@dmns).to receive(:random_contestant).and_return(@patron_3)
+    @dmns.add_exhibit(@gems_and_minerals)
+    @dmns.add_exhibit(@dead_sea_scrolls)
+    @dmns.add_exhibit(@imax)
+    @dmns.admit(@patron_1)
+    @dmns.admit(@patron_2)
+    @dmns.admit(@patron_3)
+    @dmns.admit(@patron_4)
+    allow(@dmns).to receive(:draw_lottery_winner).and_return(@patron_3.name)
     expect(@dmns.draw_lottery_winner(@dead_sea_scrolls)).to eq("Johnny")
   end
 
   it 'lottery winner is nil if there are no contestants' do
+    @dmns.add_exhibit(@gems_and_minerals)
+    @dmns.add_exhibit(@dead_sea_scrolls)
+    @dmns.add_exhibit(@imax)
+    @dmns.admit(@patron_1)
+    @dmns.admit(@patron_2)
+    @dmns.admit(@patron_3)
+    @dmns.admit(@patron_4)
     expect(@dmns.draw_lottery_winner(@gems_and_minerals)).to be nil
   end
 end

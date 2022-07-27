@@ -32,13 +32,18 @@ class Museum
   end
 
   def ticket_lottery_contestants(exhibit)
-    ticket_lottery_contestants = []
+    ticket_lottery_arr = []
     patrons_by_exhibit_interest[exhibit].each do |patron|
       if patron.spending_money < exhibit.cost
-        ticket_lottery_contestants << patron
+        ticket_lottery_arr << patron
       end
     end
-    ticket_lottery_contestants
+    ticket_lottery_arr
+  end
+
+  def draw_lottery_winner(exhibit)
+    return nil if ticket_lottery_contestants(exhibit).empty?
+    ticket_lottery_contestants(exhibit).sample(1)[0].name
   end
 
 end
